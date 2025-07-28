@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+
+<head>
+
+    <title>Add to Cart</title>
+    <link rel="stylesheet" href="index.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
+        rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="site.webmanifest">
+</head>
+
+<body>
+    <div class="loader" id="loader">
+
+        <svg viewBox="0 0 80 80">
+            <rect x="8" y="8" width="64" height="64"></rect>
+        </svg>
+        <h1>Loading your list</h1>
+    </div>
+    <div class="main-content hidden" id="main-content">
+        <div class="form-container">
+            <h1>Shopping List</h1>
+            <img id="cat-img"
+                src="https://static.vecteezy.com/system/resources/previews/034/210/185/original/cartoon-cute-cat-in-shopping-cart-ai-generative-png.png"
+                alt="cute cat in shopping trolly"></img>
+            <input type="text" id="input-field" placeholder="Enter item to add">
+            <button id="add-button">Add to Cart</button>
+            <ul id="item-list">
+
+            </ul>
+            <script type="module" src="index.js"></script>
+        </div>
+        <div id="notifier-container" class="hidden">Test Input</div>
+    </div>
+</body>
+
+</html>
