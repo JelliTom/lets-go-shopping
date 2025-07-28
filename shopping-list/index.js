@@ -8,11 +8,11 @@ const appSettings = {
 
 const app = initializeApp(appSettings)
 const database = getDatabase(app)
+const dbRootRef = ref(database, '/');
 
 const inputFieldEl = document.getElementById("input-field");
-const listInputFieldEl = document.getElementById("list-input-field");
+const listSelectFieldEl = document.getElementById("list-select-field");
 const addButtonEl = document.getElementById("add-button");
-const listSelButtonEl = document.getElementById("select-list-button");
 const notifierContainerEl = document.getElementById("notifier-container");
 const itemListEl = document.getElementById("item-list");
 const catImg = document.getElementById("cat-img");
@@ -20,26 +20,20 @@ const mainContentEl = document.getElementById("main-content");
 const loaderEl = document.getElementById("loader");
 let currentRef = ref(database, "items");
 
-listInputFieldEl.addEventListener("input", function () {
-    if (listInputFieldEl.value.trim() !== "") {
+listSelectFieldEl.addEventListener("input", function () {
+    if (listSelectFieldEl.value.trim() !== "") {
         console.log("updated list");
-        currentRef = ref(database, listInputFieldEl.value.toLowerCase());
+        currentRef = ref(database, listSelectFieldEl.value.toLowerCase());
     }
 });
 
-listInputFieldEl.onkeydown = function (event) {
-    if (event.key === "Enter") {
-        listSelButtonEl.click();
-    }
-};
-
-listSelButtonEl.addEventListener("click", async function () {
-    let inputValue = listInputFieldEl.value;
+listSelectFieldEl.addEventListener("change", async function () {
+    let inputValue = listSelectFieldEl.value;
     if (inputValue == "") {
         return;
     }
     else {
-        currentRef = ref(database, listInputFieldEl.value.toLowerCase());
+        currentRef = ref(database, listSelectFieldEl.value);
         onValue(currentRef, function (snapshot) {
             let snapVal = snapshot.val();
             if (snapVal === null) {
@@ -73,7 +67,7 @@ listSelButtonEl.addEventListener("click", async function () {
 });
 
 window.addEventListener("load", function () {
-    listInputFieldEl.value = "items"; // Force default value
+    listSelectFieldEl.value = "items"; // Force default value
     currentRef = ref(database, "items"); // Reset database reference
     setTimeout(() => {
         loaderEl.classList.add("hidden");
@@ -81,6 +75,35 @@ window.addEventListener("load", function () {
         mainContentEl.classList.add("visible");
     }, 3000);
 });
+
+
+onValue(dbRootRef, (snapshot) => {
+    console.log("Here are your top-level references (keys):");
+    let currentSelect = listSelectFieldEl.value;
+
+    // Check if there's any data at the root
+    if (snapshot.exists()) {
+        clearItems(listSelectFieldEl);
+        // Iterate through each child (which represents a top-level reference)
+        snapshot.forEach((childSnapshot) => {
+            const topLevelKey = childSnapshot.key; // This is the name of your reference!
+            console.log(`- ${topLevelKey}`);
+            if (childSnapshot.key == currentSelect) {
+                listSelectFieldEl.innerHTML += `<option selected="selected" value="${topLevelKey}">${topLevelKey}</option>`;
+            } else {
+                listSelectFieldEl.innerHTML += `<option value="${topLevelKey}">${topLevelKey}</option>`;
+            }
+
+            // If you also wanted to see the data under that reference:
+            // const dataUnderRef = childSnapshot.val();
+            // console.log(`  Data:`, dataUnderRef);
+        });
+
+    } else {
+        console.log("Your database root is empty!");
+    }
+});
+
 
 function clearField(field) {
     field.value = "";

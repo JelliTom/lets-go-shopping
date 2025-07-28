@@ -13,6 +13,20 @@ body {
     /* Smooth transition */
 }
 
+select {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: #fdb3b3;
+    text-align: center;
+    color: rgb(0, 0, 0);
+    border-radius: 8px;
+    margin: 10px 0;
+    border: 0;
+    font-size: large;
+    font-family: 'Rubik', sans-serif;
+}
+
 .main-content.visible {
     opacity: 1;
     transition: opacity 0.5s ease;

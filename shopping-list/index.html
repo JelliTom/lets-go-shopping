@@ -28,17 +28,16 @@
         <div class="form-container">
             <h3>
                 Select a list ...
-                <input type="text" id="list-input-field" placeholder="items" value="items">
-                <button id="select-list-button">Go</button>
+                <select id="list-select-field" placeholder="items" value="items">
+                    <option value="items">Items</option>
+                </select>
             </h3>
             <img id="cat-img"
                 src="https://static.vecteezy.com/system/resources/previews/034/210/185/original/cartoon-cute-cat-in-shopping-cart-ai-generative-png.png"
                 alt="cute cat in shopping trolly"></img>
             <input type="text" id="input-field" placeholder="Enter item to add">
             <button id="add-button">Add to Cart</button>
-            <ul id="item-list">
-
-            </ul>
+            <ul id="item-list"></ul>
             <script type="module" src="index.js"></script>
         </div>
         <div id="notifier-container" class="hidden">Test Input</div>
