@@ -51,7 +51,7 @@ img.grow {
     /* Enlarge the image */
 }
 
-h1 {
+h3 {
     text-align: center;
     font-family: 'Rubik', sans-serif
 }
@@ -71,6 +71,18 @@ input {
 #item-list {
     margin: 0px;
     font-family: 'Rubik', sans-serif
+}
+
+#select-list-button {
+    padding: 10px;
+    background-color: #a83939;
+    border-radius: 5px;
+    color: black;
+    border: 0;
+    cursor: pointer;
+    margin: 0;
+    font-family: 'Rubik', sans-serif;
+    transition: background-color 0.3s ease;
 }
 
 button {

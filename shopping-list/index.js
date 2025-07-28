@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js"
-import { getDatabase, ref, push, onValue, child, remove } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js"
+import { getDatabase, ref, push, onValue, get, child, remove } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js"
 
 
 const appSettings = {
@@ -8,21 +8,79 @@ const appSettings = {
 
 const app = initializeApp(appSettings)
 const database = getDatabase(app)
-const itemsInDB = ref(database, "items")
 
 const inputFieldEl = document.getElementById("input-field");
+const listInputFieldEl = document.getElementById("list-input-field");
 const addButtonEl = document.getElementById("add-button");
+const listSelButtonEl = document.getElementById("select-list-button");
 const notifierContainerEl = document.getElementById("notifier-container");
 const itemListEl = document.getElementById("item-list");
 const catImg = document.getElementById("cat-img");
 const mainContentEl = document.getElementById("main-content");
 const loaderEl = document.getElementById("loader");
+let currentRef = ref(database, "items");
 
-setTimeout(() => {
-    loaderEl.classList.add("hidden");
-    mainContentEl.classList.remove("hidden");
-    mainContentEl.classList.add("visible");
-}, 3000);
+listInputFieldEl.addEventListener("input", function () {
+    if (listInputFieldEl.value.trim() !== "") {
+        console.log("updated list");
+        currentRef = ref(database, listInputFieldEl.value.toLowerCase());
+    }
+});
+
+listInputFieldEl.onkeydown = function (event) {
+    if (event.key === "Enter") {
+        listSelButtonEl.click();
+    }
+};
+
+listSelButtonEl.addEventListener("click", async function () {
+    let inputValue = listInputFieldEl.value;
+    if (inputValue == "") {
+        return;
+    }
+    else {
+        currentRef = ref(database, listInputFieldEl.value.toLowerCase());
+        onValue(currentRef, function (snapshot) {
+            let snapVal = snapshot.val();
+            if (snapVal === null) {
+                console.log("No items in the database");
+                itemListEl.innerHTML = "No Items yet ...";
+                return;
+            }
+            let itemsArray = Object.entries(snapshot.val());
+            console.log(itemsArray);
+            clearItems(itemListEl);
+            for (let i = 0; i < itemsArray.length; i++) {
+                let currentBookEntry = itemsArray[i]
+                addItem(itemListEl, currentBookEntry);
+            }
+        });
+        const snapshot = await get(currentRef);
+        let snapVal = snapshot.val();
+        if (snapVal === null) {
+            console.log("No items in the database");
+            itemListEl.innerHTML = "No Items yet ...";
+            return;
+        }
+        let itemsArray = Object.entries(snapshot.val());
+        console.log(itemsArray);
+        clearItems(itemListEl);
+        for (let i = 0; i < itemsArray.length; i++) {
+            let currentBookEntry = itemsArray[i]
+            addItem(itemListEl, currentBookEntry);
+        }
+    }
+});
+
+window.addEventListener("load", function () {
+    listInputFieldEl.value = "items"; // Force default value
+    currentRef = ref(database, "items"); // Reset database reference
+    setTimeout(() => {
+        loaderEl.classList.add("hidden");
+        mainContentEl.classList.remove("hidden");
+        mainContentEl.classList.add("visible");
+    }, 3000);
+});
 
 function clearField(field) {
     field.value = "";
@@ -64,9 +122,11 @@ function addItem(itemList, item) {
         console.log(`you double clicked on ${item[1]}`);
         const keyToDelete = item[0];
         console.log(`Deleting item with key: ${keyToDelete}`);
-        let specificItemRef = ref(database, `items/${keyToDelete}`);
+        console.log(currentRef)
+        let specificItemRef = child(currentRef, keyToDelete);
         remove(specificItemRef);
     });
+
 }
 
 function clearItems(itemList) {
@@ -92,7 +152,7 @@ addButtonEl.addEventListener("click", function () {
     notifierContainerEl.classList.remove("hidden");
     notifierContainerEl.classList.add("visible");
 
-    push(itemsInDB, inputValue)
+    push(currentRef, inputValue)
 
     setTimeout(() => {
         notifierContainerEl.classList.remove("visible");
@@ -103,7 +163,7 @@ addButtonEl.addEventListener("click", function () {
 
 
 
-onValue(itemsInDB, function (snapshot) {
+onValue(currentRef, function (snapshot) {
     let snapVal = snapshot.val();
     if (snapVal === null) {
         console.log("No items in the database");
@@ -111,6 +171,7 @@ onValue(itemsInDB, function (snapshot) {
         return;
     }
     let itemsArray = Object.entries(snapshot.val());
+    console.log(itemsArray);
     clearItems(itemListEl);
     for (let i = 0; i < itemsArray.length; i++) {
         let currentBookEntry = itemsArray[i]
